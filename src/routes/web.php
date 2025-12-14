@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PurchaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,31 +16,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
+// 認証あり
+Route::middleware('auth')->group(function () {
+
+  Route::get('/mypage/profile', [UserController::class, 'profile']);
+  Route::patch('/mypage/profile', [UserController::class, 'updateProfileInfo']);
+
+  Route::get('/mypage', [UserController::class, 'mypage']);
+
+  Route::get('/purchase/{item_id}', [PurchaseController::class, 'purchase']);
+  Route::post('/purchase/{item_id}', [PurchaseController::class, 'purchaseStore']);
+
+  Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'address']);
+
+  Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'changeAddress']);
+
+  Route::get('/sell', [ItemController::class, 'sell']);
+
+
 });
 
-Route::get('/login', function () {
-    return view('login');
-});
+Route::get('/', [ItemController::class, 'index']);
 
-Route::get('/register', function () {
-    return view('register');
-});
+Route::get('/item/{item_id}', [ItemController::class, 'detail']);
 
-Route::get('/address', function () {
-    return view('address');
-});
-
-Route::get('/sell', function () {
-    return view('sell');
-});
-
-Route::get('/mypage', function () {
-    return view('mypage');
-});
-
-Route::get('/mypage/profile', function () {
-    return view('profile');
-});
 

@@ -6,159 +6,78 @@
 
 @section('content')
 <div class="content">
-
-  <!-- 商品画像 -->
-  <div class="item-box">
-      <img id="item-box__img" src="" alt="" />
+  <!-- 商品画像(左) -->
+  <div class="left">
+    <img class="item-img" src="{{ $item->img }}" alt="商品画像" />
   </div>
 
+  <!-- 商品詳細(右) -->
+  <div class="right">
+    <h1 class="item-name">{{ $item->name }}</h1>
+    <p class="item-brand">{{ $item->brand }}</p>
+    <p class="item-price">¥<span class="item-price__num">{{ $item->price }}</span>（税込）</p>
 
-
-
-  <div class="content-right">
-    <!-- 商品名 -->
-    <div class="item-name">
-      <input class="item-name__input" value="" name="name" readonly />
-    </div>
-    <!-- ブランド名 -->
-    <div class="item-brand">
-      <input class="item-brand__input" value="" name="name" readonly />
-    </div>
-    <!-- 販売価格 -->
-    <div class="item-price">
-      <input class="item-price__input" value="" name="name" readonly />
-    </div>
-
-    <!-- アイコン1 -->
-    <!-- アイコン2 -->
-    <!-- 購入手続きへ　ボタン -->
-    <div class="form__button">
-      <button class="form__button-submit" type="submit">購入手続きへ</button>
-    </div>
-    <h2 class="item-describe">商品説明</h2>
-    <!-- カラー -->
-    <div class="item-color">
-      <input class="item-color__input" value="" name="name" readonly />
-    </div>    
-
-
-
-    <!-- 商品画像 -->
-    <div class="form-input">
-      <span class="form__label--item">商品画像</span>
-      <input type="name" name="item-img" class="form__input--item-img"
-    value="{{ old('item-img') }}" />
-    </div>
-
-    <h2 class="content-subtitle">商品の詳細</h2>
-    <!-- カテゴリー -->
-    <div class="form-input">
-      <span class="form__label--item">カテゴリー</span>
-      <div class="category-wrapper">
-        <label class="category-item">
-          <input type="radio" name="category" value="ファッション">
-          ファッション
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="家電">
-          家電
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="インテリア">
-          インテリア
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="レディース">
-          レディース
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="メンズ">
-          メンズ
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="コスメ">
-          コスメ
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="本">
-          本
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="ゲーム">
-          ゲーム
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="スポーツ">
-          スポーツ
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="キッチン">
-          キッチン
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="ハンドメイド">
-          ハンドメイド
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="アクセサリー">
-          アクセサリー
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="おもちゃ">
-          おもちゃ
-        </label>
-
-        <label class="category-item">
-          <input type="radio" name="category" value="ベビー・キッズ">
-          ベビー・キッズ
-        </label>
+    <!-- アイコン -->
+    <div class="icon-group">
+      <div class="icon__likes">
+        <img class="icon" src="{{ asset('images/likes_default.png') }}" alt="いいねデフォルト" />
+        <!-- <img class="icon" src="{{ asset('images/likes_pink.png') }}" alt="いいね" /> -->
+        <p class="icon__count">12</p>
+      </div>
+      <div class="icon__comment">
+        <img class="icon" src="{{ asset('images/comment.png') }}" alt="コメント" />
+        <p class="icon__count">10</p>
       </div>
     </div>
-    <!-- 商品の状態 -->
-    <div class="form-input">
-      <span class="form__label--item">商品の状態</span>
-      <select name="condition" class="form__input--item">
-        <option value="良好">良好</option>
-        <option value="目立った傷や汚れなし">目立った傷や汚れなし</option>
-        <option value="やや傷や汚れあり">やや傷や汚れあり</option>
-        <option value="状態が悪い">状態が悪い</option>
-      </select>
-    </div>
-    <!-- 商品名 -->
-    <div class="form-input">
-      <span class="form__label--item">商品名</span>
-      <input type="name" name="name" class="form__input--item"/>
-    </div>
-    <!-- ブランド名 -->
-    <div class="form-input">
-      <span class="form__label--item">ブランド名</span>
-      <input type="name" name="name" class="form__input--item"/>
-    </div>
-    <!-- 商品の説明 -->
-    <div class="form-input">
-      <span class="form__label--item">商品の説明</span>
-      <textarea name="describe" class="form__textarea--item">{{ old('describe') }}</textarea>
-    </div>
-    <!-- 販売価格 -->
-    <div class="form-input">
-      <span class="form__label--item">販売価格</span>
-      <input type="text" name="name" class="form__input--item"/>
-    </div>
-    <!-- ボタン -->
+
     <div class="form__button">
-      <button class="form__button-submit" type="submit">出品する</button>
+      <a class="form__button-submit" href="/purchase/{{ $item->id }}">購入手続きへ</a>
+    </div>
+
+    <div class="sub-content">
+      <h2 class="item-describe">商品説明</h2>
+      <p class="item-description">{{ $item->description }}</p>
+    </div>
+
+    <div class="sub-content">
+      <h2 class="item-info">商品の情報</h2>
+      <div class="item-info__group">
+        <p class="item-info__title">カテゴリー</p>
+        <p class="item-categories">要修正</p>
+      </div>
+      <div class="item-info__group">
+        <p class="item-info__title">商品の状態</p>
+        <p class="item-condition">{{ $item->condition_id }}</p>
+      </div>
+    </div>
+
+    <div class="sub-content">
+      <h3 class="item-comment">コメント(数)</h3>
+
+      <!-- プロフィール画像 -->
+      <!-- コメントの数を繰り返す -->
+      <div class="profile-box">
+        <div class="profile-thumb">
+          <img id="profilePreview" src="" alt="" />
+        </div>
+        <!-- ユーザー名 -->
+        <span class="profile-name">
+          ユーザー名を表示
+        </span>
+      </div>
+      <!-- コメント表示 -->
+      <p class="comments"></p>
+      <!-- ここまで繰り返す     -->
+
+      <!-- コメント入力 -->
+      <form action="" class="form-comment">
+        <p class="form-comment__title">商品へのコメント</p>
+        <textarea class="form-comment__textarea" name="comment"></textarea>
+        <!-- ボタン -->
+        <div class="form__button">
+          <button class="form__button-submit" type="submit">コメントを送信する</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

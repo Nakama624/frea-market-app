@@ -6,23 +6,24 @@
 
 @section('content')
 <div class="content">
-  <form action="/register" class="login-form">
+  <form action="/purchase/address/{{ $item->id }}"  class="login-form" method="post">
+    @csrf
     <h1 class="content-title">住所の変更</h1>
     <!-- 郵便番号 -->
     <div class="form-input">
       <span class="form__label--item">郵便番号</span>
-      <input type="text" name="postcode" class="form__input--item"
-    value="{{ old('postcode') }}" />
+      <input type="text" name="delivery_postcode" class="form__input--item"
+    value="{{ old('delivery_postcode') }}" />
     </div>
     <!-- 住所 -->
     <div class="form-input">
-      <span class="form__label--item">パスワード</span>
-      <input type="text" name="address" class="form__input--item"/>
+      <span class="form__label--item">住所</span>
+      <input type="text" name="delivery_address" class="form__input--item" value="{{ old('delivery_address') }}" />
     </div>
     <!-- 建物 -->
     <div class="form-input">
       <span class="form__label--item">建物</span>
-      <input type="text" name="building" class="form__input--item"/>
+      <input type="text" name="delivery_building" class="form__input--item" value="{{ old('delivery_building') }}" />
     </div>
     <!-- ボタン -->
     <div class="form__button">

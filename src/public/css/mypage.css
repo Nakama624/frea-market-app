@@ -1,15 +1,18 @@
 .content {
   margin: 0 auto;
-  padding: 60px 15px;
-  max-width: 1512px;
+  padding: 0 15px 60px 15px;
+  max-width: 1540px;
 }
 
-/* start　プロフィール画像 */
+/* start プロフィール画像 */
 .profile-box {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 80px;
+  padding:50px 100px;
+
 }
+
 .profile-thumb {
   width: 130px;
   height: 130px;
@@ -18,15 +21,18 @@
   overflow: hidden;
   flex-shrink: 0;
 }
+
 .profile-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .profile-file {
   display: none;
 }
+
 .profile-btn {
   display: inline-block;
   padding: 6px 14px;
@@ -36,48 +42,63 @@
   border-radius: 4px;
   background: #fff;
   cursor: pointer;
-}
-/* end プロフィール画像 */
-
-
-.login-form {
-  margin: 0 auto;
-  width: 500px;
-}
-.content-title {
-  font-size: 28px;
-  text-align: center;
-}
-.form-input {
-  width: 100%;
-  margin-bottom: 20px;
-}
-.form__label--item {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-.form__input--item {
-  width: 100%;
-  height: 35px;
-}
-.form__button {
-  margin-top: 20px;
-  width: 100%;
-  display: inline-block;
-}
-.form__button-submit {
-  width: 100%;
-  height: 40px;
-  border: none;
-  background-color: #E64C4C;
-  color: #fff;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-.form__button-tran {
-  font-size: 14px;
-  display: block;
-  text-align: center;
+  margin-left: 80px;
   text-decoration: none;
+}
+/* end　プロフィール画像 */
+
+/* start タブ */
+.form-change {
+  display: flex;
+  gap: 40px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 40px;
+}
+.form-change a {
+  color: #666;
+  text-decoration: none;
+}
+.form-change a.active {
+  color: #ff0000;
+  font-weight: bold;
+}
+.form-change__sell{
+  margin-left: 100px;
+}
+/* end タブ */
+
+.item-group{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+.item-group__row{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.item-group__img{
+  background: #e0e0e0;
+  border: none;
+  width: 100%;
+}
+
+.item-group__name-sold {
+  display: flex;
+  width: 100%;
+  border: none;
+  height: 50px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-group__name {
+  /* font-size: 18px; */
+  width: 70%
+}
+
+.item-group__sold {
+  color: #ff0000;
+  font-weight: bold;
+  font-size: 20px;
 }
