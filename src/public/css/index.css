@@ -4,7 +4,7 @@
   max-width: 1540px;
 }
 
-/* ここからタブ */
+/* タブ */
 .form-change {
   display: flex;
   gap: 40px;
@@ -21,8 +21,13 @@
 }
 .form-change__recommend{
   margin-left: 100px;
+  font-size: 20px;
 }
-/* ここまでタブ */
+
+.form-change__mylist{
+  font-size: 20px;
+}
+/* タブ */
 
 .item-group{
   display: grid;
@@ -55,6 +60,7 @@
   height: 50px;
   justify-content: space-between;
   align-items: center;
+  font-size: 18px;
 }
 .item-group__name{
   width:70%
@@ -67,13 +73,22 @@
 }
 
 @media screen and (max-width: 850px) {
+  .form-change__recommend{
+    font-size: 14px;
+    margin-left: 60px;
+  }
+
+  .form-change__mylist {
+    font-size: 14px;
+  }
+
   .item-group{
     gap: 20px;
   }
 
   .item-group__name,
   .item-group__sold{
-    font-size: 15px;
+    font-size: 14px;
     margin-top: 0;
   }
 }

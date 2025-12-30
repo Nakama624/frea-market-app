@@ -16,5 +16,20 @@ class Purchase extends Model
     'delivery_address',
     'delivery_building',
     'payment_id',
+    'status',
+    'paid_at',
   ];
+
+  // リレーション
+  public function user(){
+    return $this->belongsTo(User::class);
+  }
+
+  public function item(){
+    return $this->belongsTo(Item::class);
+  }
+
+  public function payment(){
+    return $this->belongsTo(Payment::class);
+  }
 }

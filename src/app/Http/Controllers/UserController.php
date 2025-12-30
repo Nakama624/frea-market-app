@@ -26,11 +26,11 @@ class UserController extends Controller
     // 画像が選択された場合だけ保存
     if ($request->hasFile('profile_img')) {
       $path = $request->file('profile_img')->store('profiles', 'public');
-      $data['profile_img'] = $path;
+      $data['profile_img'] = basename($path);
     }
 
     $user->update($data);
-    return redirect('/mypage');
+    return redirect('/mypage?page=sell');
   }
 
 
@@ -52,21 +52,20 @@ class UserController extends Controller
     // 購入品
     }elseif ($page === 'buy'){
 
-      $boughtItemIds = Purchase::where('user_id', $user->id)
-        ->pluck('item_id')
-        ->toArray();
-
-      $items = Item::whereIn('id', $boughtItemIds)
-        ->with(['seller', 'purchaseItem'])
-        ->get();
-
-      // SOLD
-      $soldItemIds = $boughtItemIds;
+      $items = $user->purchases()
+        ->with('item.seller', 'item.purchaseItem')
+        ->get()
+        ->pluck('item');
 
     }else{
-      $items = Item::all();
-      $soldItemIds = Purchase::pluck('item_id')->toArray();
+
+      // SOLD
+      $soldItemIds = $items->pluck('id')->toArray();
+
+      return redirect('/mypage?page=sell');
+
     }
+
     return view('mypage', compact('user', 'items', 'soldItemIds'));
   }
 }

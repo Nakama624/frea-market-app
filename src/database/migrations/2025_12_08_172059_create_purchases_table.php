@@ -21,6 +21,8 @@ class CreatePurchasesTable extends Migration
       $table->string('delivery_address');
       $table->string('delivery_building')->nullable();
       $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
+      $table->string('status')->default('pending'); // pending/paid
+      $table->timestamp('paid_at')->nullable();
       $table->timestamps();
     });
   }

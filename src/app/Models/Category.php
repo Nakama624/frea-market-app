@@ -14,8 +14,7 @@ class Category extends Model
   ];
 
   // リレーション
-  public function items()
-  {
-    return $this->belongsToMany(Category::class, 'categories_items');
+  public function items(){
+    return $this->belongsToMany(Item::class, 'categories_items', 'category_id', 'item_id');
   }
 }

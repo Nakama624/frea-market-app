@@ -33,7 +33,7 @@ class ItemController extends Controller
         $query->where('sell_user_id', '!=', Auth::id());
       }
 
-      $items = $query->get();
+      $items = $query->with(['seller', 'categories', 'purchaseItem'])->get();
 
     // マイリストタブ
     }elseif ($tab === 'mylist'){
@@ -42,7 +42,7 @@ class ItemController extends Controller
       if (!Auth::check()) {
         return view('index', [
             'items' => collect(),
-            'soldItemIds' => Purchase::pluck('item_id')->toArray(),
+            'soldItemIds' => Purchase::distinct()->pluck('item_id')->toArray(),
             'tab' => 'mylist',
             'keyword' => $keyword,
         ]);
@@ -58,7 +58,7 @@ class ItemController extends Controller
     }
 
     // SOLDも表示
-    $soldItemIds = Purchase::pluck('item_id')->toArray();
+    $soldItemIds = Purchase::distinct()->pluck('item_id')->toArray();
 
     return view('index', compact('items', 'soldItemIds', 'tab', 'keyword'));
   }
@@ -68,6 +68,11 @@ class ItemController extends Controller
     $userId = Auth::id();
 
     $item = Item::query()
+      ->with([
+        'categories',
+        'condition',
+        'comments.user',
+      ])
       ->withCount('likedUsers') // いいねカウント
       ->when($userId, function ($q) use ($userId) {
         $q->withExists([
@@ -81,7 +86,7 @@ class ItemController extends Controller
 
     $user = Auth::user();
     // SOLDは購入不可
-    $soldItemIds = Purchase::pluck('item_id')->toArray();
+    $soldItemIds = Purchase::distinct()->pluck('item_id')->toArray();
 
     return view('item', compact('item', 'user','soldItemIds'));
   }
@@ -149,7 +154,6 @@ class ItemController extends Controller
 
     // 保存後画面をリロード
     Comment::create($data);
-    $item->load('comments.user');
 
     return redirect('/item/' . $item->id);
   }

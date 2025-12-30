@@ -14,7 +14,7 @@
     <div class="form-input profile-box">
       <div class="profile-thumb">
         @if ($user->profile_img)
-          <img id="profilePreview" src="{{ asset('storage/' . $user->profile_img) }}" alt="" />
+          <img id="profilePreview" src="{{ asset('storage/profiles/' . $user->profile_img) }}" alt="" />
         @else
           <img id="profilePreview" src="" alt="" />
         @endif

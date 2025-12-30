@@ -4,18 +4,17 @@
   max-width: 1540px;
 }
 
-/* start プロフィール画像 */
+/* プロフィール画像 */
 .profile-box {
   display: flex;
   align-items: center;
   gap: 80px;
   padding:50px 100px;
-
 }
 
 .profile-thumb {
-  width: 130px;
-  height: 130px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   background: #e0e0e0;
   overflow: hidden;
@@ -29,11 +28,14 @@
   display: block;
 }
 
+.profile-name{
+  font-size: 20px;
+}
 
 .profile-btn {
   display: inline-block;
   padding: 6px 14px;
-  font-size: 12px;
+  font-size: 18px;
   border: 1px solid #ff5555;
   color: #ff5555;
   border-radius: 4px;
@@ -42,27 +44,35 @@
   margin-left: 80px;
   text-decoration: none;
 }
-/* end　プロフィール画像 */
+/* プロフィール画像 */
 
-/* start タブ */
+/* タブ */
 .form-change {
   display: flex;
   gap: 40px;
   border-bottom: 1px solid #ccc;
   margin-bottom: 40px;
 }
+
 .form-change a {
   color: #666;
   text-decoration: none;
 }
+
 .form-change a.active {
   color: #ff0000;
   font-weight: bold;
 }
+
 .form-change__sell{
   margin-left: 100px;
+  font-size: 20px;
 }
-/* end タブ */
+
+.form-change__buy{
+  font-size: 20px;
+}
+/* タブ */
 
 .item-group{
   display: grid;
@@ -95,6 +105,7 @@
   height: 50px;
   justify-content: space-between;
   align-items: center;
+  font-size: 20px;
 }
 
 .item-group__name {
@@ -104,17 +115,39 @@
 .item-group__sold {
   color: #ff0000;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 @media screen and (max-width: 850px) {
+  .profile-box {
+    gap: 40px;
+  }
+
+  .profile-thumb {
+    width: 130px;
+    height: 130px;
+  }
+
+  .profile-name{
+    font-size: 16px;
+  }
+
+  .profile-btn {
+    font-size: 12px;
+  }
+
+  .form-change__sell,
+  .form-change__buy {
+    font-size: 14px;
+  }
+
   .item-group{
     gap: 20px;
   }
 
   .item-group__name,
   .item-group__sold{
-    font-size: 15px;
+    font-size: 16px;
     margin-top: 0;
   }
 }

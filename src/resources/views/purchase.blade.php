@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<form class="content" action="/purchase/{{ $item->id }}" method="post">
+<form class="content" action="/purchase/{{ $item->id }}" method="post" target="_blank">
   @csrf
   <!-- 商品画像(左) -->
   <div class="left">

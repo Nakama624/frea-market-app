@@ -85,6 +85,9 @@ Route::middleware('auth')->group(function () {
     // いいね機能
     Route::post('/items/{item}/like', [ItemController::class, 'toggle']);
 
+    // Stripe戻り先（Webhookなしでpaid化するため）
+    Route::get('/purchase/stripe/success', [PurchaseController::class, 'stripeSuccess'])->name('purchase.stripe.success');
+    Route::get('/purchase/stripe/cancel',  [PurchaseController::class, 'stripeCancel'])->name('purchase.stripe.cancel');
   });
 });
 

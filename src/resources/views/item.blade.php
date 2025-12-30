@@ -66,7 +66,7 @@
     <div class="profile-box">
       <div class="profile-thumb">
         @if ($comment->user && $comment->user->profile_img)
-          <img src="{{ asset('storage/' . $comment->user->profile_img) }}" alt="">
+          <img src="{{ asset('storage/profiles/' . $comment->user->profile_img) }}" alt="">
         @endif
       </div>
       <!-- ユーザー名 -->

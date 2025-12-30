@@ -20,9 +20,16 @@ class Item extends Model
   ];
 
    // リレーション
-  public function condition()
-  {
+  public function condition(){
     return $this->belongsTo(Condition::class);
+  }
+
+  public function categories(){
+    return $this->belongsToMany(Category::class, 'categories_items', 'item_id', 'category_id');
+  }
+
+  public function comments(){
+    return $this->hasMany(Comment::class);
   }
 
   public function seller(){
@@ -30,18 +37,10 @@ class Item extends Model
   }
 
   public function purchaseItem(){
-      return $this->hasOne(Purchase::class, 'item_id');
-  }
-
-  public function categories(){
-    return $this->belongsToMany(Category::class, 'categories_items');
-  }
-
-  public function comments(){
-    return $this->hasMany(Comment::class);
+    return $this->hasOne(Purchase::class, 'item_id');
   }
 
   public function likedUsers(){
     return $this->belongsToMany(User::class, 'likes')->withTimestamps();
-}
+  }
 }
