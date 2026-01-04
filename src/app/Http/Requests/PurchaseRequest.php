@@ -34,8 +34,8 @@ class PurchaseRequest extends FormRequest
   {
     return [
       'payment_id.required' => '支払方法を選択してください',
-      'delivery_postcode.required' => '郵便番号の指定がありません',
-      'delivery_address.required' => '住所の指定がありません',
+      'delivery_postcode.required' => '配送先の郵便番号を指定してください',
+      'delivery_address.required' => '配送先の住所を指定をしてください',
     ];
   }
 }

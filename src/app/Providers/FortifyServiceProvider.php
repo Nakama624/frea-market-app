@@ -13,9 +13,15 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 
+// 新規登録時にメール認証
 use App\Http\Responses\RegisterResponse as CustomRegisterResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
 
+// ログイン時にメール認証をしていない場合は認証誘導画面へ
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use App\Http\Responses\LoginResponse as CustomLoginResponse;
+
+// メール認証後は商品一覧へ
 use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
 use App\Http\Responses\VerifyEmailResponse as CustomVerifyEmailResponse;
 
@@ -53,11 +59,11 @@ class FortifyServiceProvider extends ServiceProvider
     //     return Limit::perMinute(5)->by($request->session()->get('login.id'));
     // });
     Fortify::registerView(function () {
-        return view('auth.register');
+      return view('auth.register');
     });
 
     Fortify::loginView(function () {
-        return view('auth.login');
+      return view('auth.login');
     });
 
     Fortify::verifyEmailView(function () {
@@ -65,17 +71,17 @@ class FortifyServiceProvider extends ServiceProvider
     });
 
     RateLimiter::for('login', function (Request $request) {
-        $email = (string) $request->email;
+      $email = (string) $request->email;
 
-        return Limit::perMinute(10)->by($email . $request->ip());
+      return Limit::perMinute(10)->by($email . $request->ip());
     });
 
     $this->app->singleton(RegisterResponse::class, CustomRegisterResponse::class);
+    $this->app->singleton(LoginResponseContract::class, CustomLoginResponse::class);
 
     $this->app->singleton(
       VerifyEmailResponseContract::class,
       CustomVerifyEmailResponse::class
-);
-
+    );
   }
 }

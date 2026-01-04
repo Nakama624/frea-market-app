@@ -42,9 +42,8 @@ class PurchaseController extends Controller
       'delivery_building',
     ]));
 }
-  // =========================
+
   // 商品購入確定 → Stripe決済
-  // =========================
   public function purchaseStore(PurchaseRequest $request, $item_id)
   {
     $item = Item::findOrFail($item_id);
@@ -93,9 +92,7 @@ class PurchaseController extends Controller
     return redirect()->away($session->url);
   }
 
-  // =========================
-  // Stripe 決済成功（テスト簡易）
-  // =========================
+  // Stripe 決済成功
   public function stripeSuccess(Request $request)
   {
     $purchaseId = $request->query('purchase_id');
@@ -114,9 +111,7 @@ class PurchaseController extends Controller
     return redirect('/');
   }
 
-  // =========================
   // Stripe キャンセル
-  // =========================
   public function stripeCancel(Request $request)
   {
     return redirect('/purchase/' . $request->query('item_id'))

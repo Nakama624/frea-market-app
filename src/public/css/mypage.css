@@ -13,8 +13,8 @@
 }
 
 .profile-thumb {
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: #e0e0e0;
   overflow: hidden;
@@ -35,7 +35,7 @@
 .profile-btn {
   display: inline-block;
   padding: 6px 14px;
-  font-size: 18px;
+  font-size: 14px;
   border: 1px solid #ff5555;
   color: #ff5555;
   border-radius: 4px;

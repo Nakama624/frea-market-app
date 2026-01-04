@@ -40,8 +40,6 @@ class ProfileRequest extends FormRequest
   public function messages()
   {
     return [
-      'description.required' => '商品の説明を入力してください',
-      'description.max' => '255文字以内で入力してください',
       'profile_img.mimes' => '拡張子は.jpegまたは.pngから選択してください',
       'name.required' => 'ユーザー名を入力してください',
       'name.max' => '20文字以内で入力してください',

@@ -42,12 +42,9 @@ Route::middleware('auth')->group(function () {
     return back()->with('status', 'verification-link-sent');
   });
 
-  // 「認証はこちら」からMailHog を開く（開発時のみ）
+  // 「認証はこちら」からMailHog を開く（開発時を想定しdev）
   Route::get('/dev/mailhog/open', function () {
     abort_unless(app()->environment('local'), 404);
-
-    // 認証メールを再送(後に削除予定)
-    // request()->user()->sendEmailVerificationNotification();
 
     // MailHog を開く
     return redirect()->away('http://localhost:8025');
