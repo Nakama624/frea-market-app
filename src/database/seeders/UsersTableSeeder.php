@@ -12,6 +12,9 @@ class UsersTableSeeder extends Seeder
    *
    * @return void
    */
+
+  // フリーマーケットなので必ず出品者がいる前提。
+  // 出品商品に出品会員を紐づけるため会員を事前に作成。
   public function run()
   {
     $param = [
