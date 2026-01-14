@@ -22,7 +22,7 @@ class RegisterTest extends TestCase
     $this->assertEquals($expected, session('errors')->first($field));
   }
 
-  /** 名前 */
+  // 1.名前が入力されていない場合、バリデーションメッセージが表示される
   public function test_register_name_required_message_is_shown(){
     $response = $this->post('/register', $this->validRegisterData([
       'name' => '',
@@ -32,7 +32,7 @@ class RegisterTest extends TestCase
     $this->assertFirstErrorMessage('name', 'お名前を入力してください');
   }
 
-  /** メール */
+  // 2.メールアドレスが入力されていない場合、バリデーションメッセージが表示される
   public function test_register_email_required_message_is_shown(){
     $response = $this->post('/register', $this->validRegisterData([
       'email' => '',
@@ -42,7 +42,7 @@ class RegisterTest extends TestCase
     $this->assertFirstErrorMessage('email', 'メールアドレスを入力してください');
   }
 
-  /** パスワード未入力 */
+  // 3.パスワードが入力されていない場合、バリデーションメッセージが表示される
   public function test_register_password_required_message_is_shown(){
     $response = $this->post('/register', $this->validRegisterData([
       'password' => '',
@@ -53,7 +53,7 @@ class RegisterTest extends TestCase
     $this->assertFirstErrorMessage('password', 'パスワードを入力してください');
   }
 
-  /** パスワード7文字以下 */
+  // 4.パスワードが7文字以下の場合、バリデーションメッセージが表示される
   public function test_register_password_min_8_message_is_shown(){
     $response = $this->post('/register', $this->validRegisterData([
       'password' => '1234567',
@@ -64,7 +64,7 @@ class RegisterTest extends TestCase
     $this->assertFirstErrorMessage('password', 'パスワードは8文字以上で入力してください');
   }
 
-  /** 確認用パスワード不一致 */
+  // 5.パスワードが確認用パスワードと一致しない場合、バリデーションメッセージが表示される
   public function test_register_password_confirmation_mismatch_message_is_shown(){
     $response = $this->post('/register', $this->validRegisterData([
       'password' => 'password123',
@@ -75,7 +75,7 @@ class RegisterTest extends TestCase
     $this->assertFirstErrorMessage('password', 'パスワードと一致しません');
   }
 
-  /** 登録されプロフィール設定へ遷移 */
+  // 6.全ての項目が入力されている場合、会員情報が登録され、プロフィール設定画面に遷移される
   public function test_register_success_creates_user_and_redirects_to_profile(){
     $data = $this->validRegisterData([
       'email' => 'ok@example.com',

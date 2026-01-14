@@ -13,14 +13,11 @@ class SelectPaymentMethodTest extends TestCase
 {
   use RefreshDatabase;
 
-  // 小計画面で変更が反映される
+  // 1.小計画面で変更が反映される
   public function test_selected_payment_method_is_reflected_immediately_on_subtotal(){
     // 支払い方法を用意
     $card = Payment::factory()->create(['payment_method' => 'カード払い']);
     $konbini = Payment::factory()->create(['payment_method' => 'コンビニ払い']);
-
-    // 左：セレクトを変更したら即時イベントが飛ぶ
-    $payments = Payment::query()->orderBy('id')->get();
 
     Livewire::test(PaymentSelect::class)
       ->assertSet('paymentId', '')

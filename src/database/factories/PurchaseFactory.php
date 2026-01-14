@@ -12,8 +12,7 @@ class PurchaseFactory extends Factory
 {
   protected $model = Purchase::class;
 
-  public function definition(): array
-  {
+  public function definition(): array{
     return [
       'user_id' => User::factory(),
       'item_id' => Item::factory(),

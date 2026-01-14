@@ -13,7 +13,7 @@ class GetUserInfoTest extends TestCase
 {
   use RefreshDatabase;
 
-  // 必要な情報が取得できる
+  // 1.必要な情報が取得できる
   // （プロフィール画像、ユーザー名、出品した商品一覧、購入した商品一覧）
   public function test_display_user_info(){
     $loginUser = User::factory()
@@ -21,31 +21,23 @@ class GetUserInfoTest extends TestCase
       ->verified()
       ->create();
 
-    $seller = User::factory()
+    $otherUser = User::factory()
       ->profileCompleted()
       ->verified()
       ->create();
 
     // 購入商品
-    $boughtItem = Item::factory()
-        ->soldBy($seller)
-        ->create(['name' => '購入商品']);
-
-    // 出品商品
-    $sellItem = Item::factory()
-        ->soldBy($loginUser)
-        ->create(['name' => '出品商品']);
+    $item1 = Item::factory()->soldBy($loginUser)->create(['name' => 'SELL']);
+    $item2 = Item::factory()->soldBy($otherUser)->create(['name' => 'ITEM']);
+    $item3 = Item::factory()->soldBy($otherUser)->create(['name' => 'BUY']);
 
     // 購入情報を作成
     $payment = Payment::factory()->create();
-    Purchase::factory()->create([
-      'user_id' => $loginUser->id,
-      'item_id' => $boughtItem->id,
-      'payment_id' => $payment->id,
-      'delivery_postcode' => '111-2222',
-      'delivery_address'  => '東京都八王子市111',
-      'delivery_building' => 'テストビル101',
-      'status' => 'pending',
+    
+    $soldItem = Purchase::factory()
+      ->create([
+        'item_id' => $item3->id,
+        'user_id' => $loginUser->id,
     ]);
 
     // 出品タブ
@@ -53,15 +45,19 @@ class GetUserInfoTest extends TestCase
     $sellRes->assertStatus(200);
     $sellRes->assertSee($loginUser->name);
     $sellRes->assertSee('storage/profiles/' . $loginUser->profile_img, false);
-    $sellRes->assertSee($sellItem->name);
-    $sellRes->assertDontSee($boughtItem->name);
+    $sellRes->assertSee($item1->name); //soldBy($loginUser)
+
+    $sellRes->assertDontSee($item2->name); //soldBy($otherUser)
+    $sellRes->assertDontSee($item3->name); //soldBy($otherUser)
 
     // 購入タブ
     $buyRes = $this->actingAs($loginUser)->get('/mypage?page=buy');
     $buyRes->assertStatus(200);
     $buyRes->assertSee($loginUser->name);
     $buyRes->assertSee('storage/profiles/' . $loginUser->profile_img, false);
-    $buyRes->assertSee($boughtItem->name);
-    $buyRes->assertDontSee($sellItem->name);
+    $buyRes->assertSee($item3->name);
+
+    $buyRes->assertDontSee($item1->name); //soldBy($loginUser)
+    $buyRes->assertDontSee($item2->name);
   }
 }

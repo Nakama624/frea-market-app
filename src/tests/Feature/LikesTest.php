@@ -6,54 +6,47 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Item;
-use App\Models\Condition;
 use App\Models\Like;
 
 class LikesTest extends TestCase
 {
   use RefreshDatabase;
 
-  // いいねアイコンを押下することによって、いいねした商品として登録することができる。
-  // 追加済みのアイコンは色が変化する
-  public function test_increase_likes_item_and_icon_has_active_color()
-  {
-    // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+  // 1.いいねアイコンを押下することによって、いいねした商品として登録することができる。
+  // 2.追加済みのアイコンは色が変化する
+  public function test_increase_likes_item_and_icon_has_active_color(){
+    $loginUser = User::factory()->verified()->create();
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
+    $likeItem = Item::factory()->create(['name' => 'LIKED_ITEM']);
 
-    $likeItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
-
-    // 事前は0件（増加テストのため）
+    // 事前のいいねは0件
     $this->assertDatabaseMissing('likes', [
       'item_id' => $likeItem->id,
       'user_id' => $loginUser->id,
     ]);
 
-    // いいね押下
+    // いいねを押す前を確認
+    $noLike = $this->get('/item/' . $likeItem->id);
+    $noLike->assertStatus(200);
+
+    $noLike->assertSee('<p class="icon__count">0</p>', false);
+
+    $noLike->assertDontSee('likes_pink.png', false);
+    $noLike->assertSee('likes_default.png', false);
+
+    // 1.いいね押下
     $res = $this->actingAs($loginUser)
       ->from('/item/' . $likeItem->id)
-      ->post('/items/' . $likeItem->id . '/like');
+      ->post('/items/' . $likeItem->id . '/like')
+      ->assertSessionHasNoErrors()
+      ->assertStatus(302);
+
+    // データが1件だけ作成される
+    $this->assertDatabaseCount('likes', 1);
 
     $res->assertRedirect('/item/' . $likeItem->id);
 
-    // DBに登録
+    // DBに正しく保存されていることを確認
     $this->assertDatabaseHas('likes', [
       'item_id' => $likeItem->id,
       'user_id' => $loginUser->id,
@@ -71,58 +64,40 @@ class LikesTest extends TestCase
     $response->assertDontSee('likes_default.png', false);
   }
 
-  // 再度いいねアイコンを押下することによって、いいねを解除することができる。
+  // 3.再度いいねアイコンを押下することによって、いいねを解除することができる。
   public function test_decrease_likes_item(){
-    // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+    $loginUser = User::factory()->verified()->create();
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
+    $unLikeItem = Item::factory()->create(['name' => 'UNLIKED_ITEM']);
 
-    $item = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
-
-    // いいねを直接作る
+    // 事前いいねを作る
     Like::create([
-      'item_id' => $item->id,
+      'item_id' => $unLikeItem->id,
       'user_id' => $loginUser->id,
     ]);
 
     // DBのいいねを確認
     $this->assertDatabaseHas('likes', [
-        'item_id' => $item->id,
+        'item_id' => $unLikeItem->id,
         'user_id' => $loginUser->id,
     ]);
 
     // いいね押下
     $res = $this->actingAs($loginUser)
-      ->from('/item/' . $item->id)
-      ->post('/items/' . $item->id . '/like');
+      ->from('/item/' . $unLikeItem->id)
+      ->post('/items/' . $unLikeItem->id . '/like')
+      ->assertSessionHasNoErrors();
 
-    $res->assertRedirect('/item/' . $item->id);
+    $res->assertRedirect('/item/' . $unLikeItem->id);
 
     // いいね解除確認
     $this->assertDatabaseMissing('likes', [
-      'item_id' => $item->id,
+      'item_id' => $unLikeItem->id,
       'user_id' => $loginUser->id,
     ]);
 
     // ログイン状態で商品詳細を開く
-    $response = $this->actingAs($loginUser)->get('/item/' . $item->id);
+    $response = $this->actingAs($loginUser)->get('/item/' . $unLikeItem->id);
     $response->assertStatus(200);
 
     // いいねが減っている

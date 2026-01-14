@@ -6,132 +6,81 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Item;
 use App\Models\Purchase;
-use App\Models\Condition;
-use App\Models\Payment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class IndexTest extends TestCase
 {
   use RefreshDatabase;
 
-  // 一覧ページを開くと、自分以外の出品商品が表示される
-  public function test_index_displays_all_items()
-  {
-    // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
+  // 1.全商品を取得できる
+  public function test_index_displays_all_items(){
+    $loginUser = User::factory()->verified()->create();
+    $otherUser = User::factory()->verified()->create();
 
-    // 他ユーザー
-    $otherUser = User::create([
-      'name' => '他ユーザー',
-      'email' => 'other@example.com',
-      'password' => bcrypt('password123'),
-    ]);
+    $sellItem = Item::factory()
+      ->soldBy($loginUser)
+      ->create(['name' => '出品商品']);
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
+    $otherItem = Item::factory()
+      ->soldBy($otherUser)
+      ->create(['name' => '商品']);
 
-    // ログインユーザーの商品（表示されない）
-    $myItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
-
-    // 他ユーザーの商品（表示される）
-    $otherItem = Item::create([
-      'name' => 'B商品',
-      'price' => 2000,
-      'brand' => 'ブランドB',
-      'condition_id' => $condition->id,
-      'description' => '説明B',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $otherUser->id,
-    ]);
-
-    // ログイン状態で一覧を開く
-    $response = $this->actingAs($loginUser)->get('/');
-
+    $response = $this->get('/');
     $response->assertStatus(200);
 
-    // 自分の商品は表示されない
-    $response->assertDontSee($myItem->name);
-
-    // 他人の商品は表示される
+    // 1
+    $response->assertSee($sellItem->name);
     $response->assertSee($otherItem->name);
   }
 
+  // 2.購入済み商品は「Sold」と表示される
+  public function test_sold_item_displays_sold_label(){
+    $item1 = Item::factory()->create(['name' => 'ITEM1']);
+    $item2 = Item::factory()->create(['name' => 'ITEM2']);
+    $item3 = Item::factory()->create(['name' => 'SOLD_ITEM']);
 
-  // 購入済み商品に「Sold」ラベルが表示される
-  public function test_sold_item_displays_sold_label()
-  {
-      // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-
-    // 他ユーザー
-    $otherUser = User::create([
-      'name' => '他ユーザー',
-      'email' => 'other@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
-
-    $payment = Payment::create([
-      'payment_method' => 'コンビニ払い',
-    ]);
-
-    // ログインユーザーの商品（表示されない）
-    $myItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
-
-    // 他ユーザーの商品（表示される）
-    $otherItem = Item::create([
-      'name' => 'B商品',
-      'price' => 2000,
-      'brand' => 'ブランドB',
-      'condition_id' => $condition->id,
-      'description' => '説明B',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $otherUser->id,
-    ]);
-
-
-    // 購入済みにする
-    $soldItem = Purchase::create([
-      'user_id' => $loginUser->id,
-      'item_id' => $otherItem->id,
-      'delivery_postcode' => '111-2222',
-      'delivery_address' => '東京都八王子市',
-      'payment_id' => '1',
+    $soldItem = Purchase::factory()
+      ->create([
+        'item_id' => $item3->id,
     ]);
 
     $response = $this->get('/');
-
     $response->assertStatus(200);
 
-    // 「Sold」表示を確認
-    $response->assertSee('Sold');
+    $response->assertSee($item1->name);
+    $response->assertSee($item2->name);
+    // 2
+    // SOLD_ITEMの後ろにSoldがついているか確認
+    $response->assertSeeInOrder([
+      '<p class="item-group__name">SOLD_ITEM</p>',
+      '<p class="item-group__sold">Sold</p>',
+    ], false);
+    // Sold表記が1つのみか確認
+    $this->assertSame(
+      1,
+      substr_count($response->getContent(), '<p class="item-group__sold">Sold</p>')
+    );
+  }
+
+  // 3.自分が出品した商品は表示されない
+  public function test_index_no_display_my_sellitem(){
+    $loginUser = User::factory()->verified()->create();
+    $otherUser = User::factory()->verified()->create();
+
+    $sellItem = Item::factory()
+      ->soldBy($loginUser)
+      ->create(['name' => '出品商品']);
+
+    $otherItem = Item::factory()
+      ->soldBy($otherUser)
+      ->create(['name' => '商品']);
+
+    $response = $this->actingAs($loginUser)->get('/');
+    $response->assertStatus(200);
+
+    // 3
+    $response->assertDontSee($sellItem->name);
+
+    $response->assertSee($otherItem->name);
   }
 }

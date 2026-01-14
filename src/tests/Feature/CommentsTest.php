@@ -13,30 +13,11 @@ class CommentsTest extends TestCase
 
   use RefreshDatabase;
 
-  // ログイン済みのユーザーはコメントを送信できる
+  // 1.ログイン済みのユーザーはコメントを送信できる
   public function test_logged_in_user_can_post_comment_and_comment_count_increases(){
-    // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+    $loginUser = User::factory()->verified()->create();
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
-
-    $commentItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
+    $commentItem = Item::factory()->create(['name' => 'ITEM1']);
 
     // 事前は0件（増加テストのため）
     $this->assertDatabaseMissing('comments', [
@@ -44,13 +25,21 @@ class CommentsTest extends TestCase
       'user_id' => $loginUser->id,
     ]);
 
-    // コメントを送信
+    // ログインしてコメントを送信
     $res = $this->actingAs($loginUser)
-      ->from('/item/' . $commentItem->id)
       ->post('/item/' . $commentItem->id, [
           'comment' => 'コメント追加テスト',
       ]);
+
+    // エラーが出ていないことを確認
+    $res->assertSessionHasNoErrors();
+    $res->assertStatus(302);
+
+    // データが1件だけ作成される
+    $this->assertDatabaseCount('comments', 1);
+
     $res->assertRedirect('/item/' . $commentItem->id);
+
     // DBに登録されていることを確認
     $this->assertDatabaseHas('comments', [
       'item_id' => $commentItem->id,
@@ -66,30 +55,11 @@ class CommentsTest extends TestCase
     $response->assertSee('コメント(1)');
   }
 
-  // ログイン前のユーザーはコメントを送信できない
+  // 2.ログイン前のユーザーはコメントを送信できない
   public function test_unlogged_in_user_cannot_post_comment(){
-    // ログインユーザー
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+    $loginUser = User::factory()->verified()->create();
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
-
-    $commentItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
+    $commentItem = Item::factory()->create(['name' => 'ITEM1']);
 
     // 事前は0件（増加テストのため）
     $this->assertDatabaseMissing('comments', [
@@ -97,8 +67,8 @@ class CommentsTest extends TestCase
       'user_id' => $loginUser->id,
     ]);
 
-    // コメントを送信
-    $res = $this->from('/item/' . $commentItem->id)
+    // 2.ログインなしでコメントを送信
+    $res = $this
       ->post('/item/' . $commentItem->id, [
           'comment' => 'コメント追加テスト',
       ]);
@@ -106,14 +76,14 @@ class CommentsTest extends TestCase
     // 未ログインならログイン画面へ
     $res->assertRedirect('/login');
 
-    // DBに登録されていることを確認
+    // DBに登録されていないことを確認
     $this->assertDatabaseMissing('comments', [
       'item_id' => $commentItem->id,
       'user_id' => $loginUser->id,
       'comment' => 'コメント追加テスト',
     ]);
 
-    // ログイン状態で商品詳細を開く
+    // 商品詳細を開く
     $response = $this->get('/item/' . $commentItem->id);
     $response->assertStatus(200);
 
@@ -121,37 +91,25 @@ class CommentsTest extends TestCase
     $response->assertSee('コメント(0)');
   }
 
-  // コメントが入力されていない場合、バリデーションメッセージが表示される
+  // 3.コメントが入力されていない場合、バリデーションメッセージが表示される
   public function test_comment_required(){
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+    $loginUser = User::factory()->verified()->create();
 
     $condition = Condition::create([
       'condition_name' => '新品',
     ]);
 
-    $commentItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
+    $commentItem = Item::factory()->create(['name' => 'ITEM1']);
 
+    // ログインしてコメントを「空」で送信する
     $response = $this->actingAs($loginUser)
       ->from('/item/' . $commentItem->id)
       ->post('/item/' . $commentItem->id, [
-          'comment' => '',
+        'comment' => '',
     ]);
 
     $response->assertRedirect('/item/' . $commentItem->id);
+    // 4.バリデーションが表示される
     $response->assertSessionHasErrors(['comment']);
 
     // DBに保存されていない
@@ -163,45 +121,52 @@ class CommentsTest extends TestCase
   }
 
   // コメントが255字以上の場合、バリデーションメッセージが表示される
+  // ※機能要件＆基本設計書では「最大文字数255文字」、
+  // 　テストケースには「255文字以上は不可」と相違があるが、機能要件に寄せる
+  // 　255文字→OK、256文字→不可
   public function test_comment_max_255(){
-    $loginUser = User::create([
-      'name' => 'ログインユーザー',
-      'email' => 'login@example.com',
-      'password' => bcrypt('password123'),
-    ]);
-    $loginUser->email_verified_at = now();
-    $loginUser->save();
+    $loginUser = User::factory()->verified()->create();
 
-    $condition = Condition::create([
-      'condition_name' => '新品',
-    ]);
+    $commentItem = Item::factory()->create(['name' => 'ITEM1']);
 
-    $commentItem = Item::create([
-      'name' => '商品A',
-      'price' => 1000,
-      'brand' => 'ブランドA',
-      'condition_id' => $condition->id,
-      'description' => '説明A',
-      'item_img' => 'test.jpg',
-      'sell_user_id' => $loginUser->id,
-    ]);
-
-    $tooLong = str_repeat('a', 256);
-
-    $response = $this->actingAs($loginUser)
+    // ＝＝256文字の場合エラー＝＝
+    $comment256 = str_repeat('a', 256);
+    // ログインしてコメントを送信
+    $commentErr = $this->actingAs($loginUser)
       ->from('/item/' . $commentItem->id)
       ->post('/item/' . $commentItem->id, [
-            'comment' => $tooLong,
+            'comment' => $comment256,
     ]);
 
-    $response->assertRedirect('/item/' . $commentItem->id);
-    $response->assertSessionHasErrors(['comment']);
+    $commentErr->assertRedirect('/item/' . $commentItem->id);
+    // 4.バリデーションを表示
+    $commentErr->assertSessionHasErrors(['comment']);
 
     // DBに保存されていない
     $this->assertDatabaseMissing('comments', [
       'item_id' => $commentItem->id,
       'user_id' => $loginUser->id,
-      'comment' => $tooLong,
+      'comment' => $comment256,
+    ]);
+
+    // ＝＝255文字の場合保存される＝＝
+    $comment255 = str_repeat('a', 255);
+    // ログインしてコメントを送信
+    $response = $this->actingAs($loginUser)
+      ->from('/item/' . $commentItem->id)
+      ->post('/item/' . $commentItem->id, [
+        'comment' => $comment255,
+    ]);
+
+    // エラーが出ていないことを確認
+    $response->assertSessionHasNoErrors();
+    $response->assertStatus(302);
+
+    // DBに保存されている
+    $this->assertDatabaseHas('comments', [
+      'item_id' => $commentItem->id,
+      'user_id' => $loginUser->id,
+      'comment' => $comment255,
     ]);
   }
 }

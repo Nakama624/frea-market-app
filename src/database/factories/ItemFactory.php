@@ -18,8 +18,6 @@ class ItemFactory extends Factory
         'brand'       => $this->faker->word(),
         'description' => $this->faker->realText(50),
         'item_img'    => 'test.jpg',
-
-        // ✅ ここが重要：指定されなければ自動で関連も作る
         'condition_id' => Condition::factory(),
         'sell_user_id' => User::factory(),
       ];

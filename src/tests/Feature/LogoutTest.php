@@ -9,9 +9,8 @@ use Tests\TestCase;
 class LogoutTest extends TestCase
 {
   use RefreshDatabase;
-
-  public function test_logout_function()
-  {
+  // 1.ログアウトができる
+  public function test_logout_function(){
     $user = User::factory()->create();
 
     // ログイン状態を作る

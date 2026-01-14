@@ -34,14 +34,13 @@ class PurchaseController extends Controller
 
   // 住所変更確定
   public function changeAddress(AddressRequest $request, $item_id){
-
     return redirect('/purchase/' . $item_id)
     ->withInput($request->only([
       'delivery_postcode',
       'delivery_address',
       'delivery_building',
     ]));
-}
+  }
 
   // 商品購入確定 → Stripe決済
   public function purchaseStore(PurchaseRequest $request, $item_id){

@@ -21,12 +21,8 @@
     </div>
     <!-- 二段目 -->
     <div class="left-row2">
+      <!-- livewire/payment-select.blade.phpで支払方法セレクトボックスとエラーを設定 -->
       @livewire('payment-select', ['payments' => $payments])
-      <div class="form__error-payment">
-        @error('payment_id')
-          {{ $message }}
-        @enderror
-      </div>
     </div>
     <!-- 三段目 -->
     <div class="left-row3">
@@ -63,6 +59,7 @@
       <tr class="payment-table__row">
         <td class="payment-table__price">支払方法</td>
         <td class="payment-table__price">
+          <!-- livewire/payment-display.blade.phpで支払方法表示を連動 -->
           @livewire('payment-display')
         </td>
       </tr>

@@ -51,7 +51,7 @@
 - セキュリティコード：（任意の 3 桁の数字）
 - 名前：任意の名前
 
-### 実行テスト２/コンビニ支払い（振込完了は未対応）
+### 実行テスト２/コンビニ支払い（振込結果は非同期）
 - メールアドレス：任意のアドレス
 - 名前：任意の名前
 
@@ -98,7 +98,7 @@
 - 7.商品詳細情報取得：
  `vendor/bin/phpunit tests/Feature/ItemDetailTest.php`
 - 8.いいね機能：
- `vendor/bin/phpunit tests/Feature/LikesTest.php.php`
+ `vendor/bin/phpunit tests/Feature/LikesTest.php`
 - 9.コメント送信機能：
  `vendor/bin/phpunit tests/Feature/CommentsTest.php`
 - 10.商品購入機能：
@@ -121,8 +121,8 @@
 - Laravel Framework 8.83.29
 - mysql  Ver 8.0.26
 - nginx/1.21.1
-- Mailhog
-- stripe決済
+- stripe決済 versions : * v19.1.0
+- Mailhog(取得なし)
 
 ## ER図
 ![alt text](flea_market_app.drawio.png)
@@ -132,4 +132,7 @@
 - 新規登録：http://localhost/register
 - マイページ：http://localhost/mypage
 - 商品一覧：http://localhost/
+- 出品（ログイン必須）http://localhost/sell
+
 - phpMyAdmin：http://localhost:8080/
+
